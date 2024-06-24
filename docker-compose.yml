@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 services:
   frontend:
     restart: always
@@ -6,16 +6,24 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.42-node
+      args:
+        - HOST_UID=${HOST_UID-1000}
+        - HOST_GID=${HOST_GID-1000}
     volumes:
       - ./frontend/:/app
       - ./shared/:/shared
     environment:
       - NODE_ENV=${NODE_ENV-development}
       - VUE_APP_BACKEND_SERVER_URI=${BACKEND_SERVER_URI}
+      - VUE_APP_HOSTNAME=${HOSTNAME}
+      - VUE_APP_FRONTEND_PORT=${FRONTEND_PORT}
     ports:
-      - 8080:8080
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
     networks:
-      - mynet
+      # - mynet
+      mynet:
+        aliases:
+          - ${HOSTNAME}
     command: sh -c 'npm install && npm run serve'
 
   backend:
@@ -26,8 +34,6 @@ services:
     environment:
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - ACCESS_TOKEN_EXPIRATION=${ACCESS_TOKEN_EXPIRATION}
-      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
-      - REFRESH_TOKEN_EXPIRATION=${REFRESH_TOKEN_EXPIRATION}
       - BACKEND_SERVER_URI=${BACKEND_SERVER_URI}
       - OAUTH_REDIRECT_URI=${OAUTH_REDIRECT_URI}
       - FORTY_TWO_CLIENT_ID=${FORTY_TWO_CLIENT_ID}
@@ -50,10 +56,10 @@ services:
       - 3000:3000
       - 9229:9229
     networks:
-      - mynet
-      # mynet:
-      #   aliases:
-      #     - ${DOMAIN}
+      # - mynet
+      mynet:
+        aliases:
+          - ${HOSTNAME}
     # command: sh -c 'npm install && npm run start:dev'
     command: sh -c 'npm install && npm run start:debug'
 
@@ -65,7 +71,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PGPORT= ${POSTGRES_PORT}
     ports:
-      - 5432:${POSTGRES_PORT}
+      - 5454:${POSTGRES_PORT} # default postgres (5432) port already in use in school's linux dump
     networks:
       - mynet
     volumes:

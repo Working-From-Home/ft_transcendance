@@ -11,11 +11,20 @@ git clone https://github.com/Working-From-Home/ft_transcendence.git && cd ft_tra
 Create a `.env` file, template example:
 ```
 ACCESS_TOKEN_SECRET=my_secret
-REFRESH_TOKEN_SECRET=my_secret2
 # expressed in seconds or a string describing a time span zeit/ms. Eg: 60, "2 days", "10h", "7d"
-ACCESS_TOKEN_EXPIRATION=3200s
-REFRESH_TOKEN_EXPIRATION=15d
+ACCESS_TOKEN_EXPIRATION=7d
 
+# Must change thoses two variables BEFORE BUILD AND RUN if
+# running on 42's linux dump.
+# Type the command `id` to get your `uid` and `gid`)
+# Also it only works ouside `NFS`, like `/goinfre` or `/tmp`,
+# thus, it doesn't works inside `/sgoinfre`, or your home `~/`.
+# (PS: pretty useless because docker rootless set "random" uid:gid)
+HOST_UID=1000
+HOST_GID=1000
+
+HOSTNAME=e2r10p17
+FRONTEND_PORT=8080
 # localhost can be replaced by the hostname or ip of the computer to
 # make the website available from others computers.
 # example: http://e2r5p13:3000 or http://10.05.155.14:3000
